@@ -41,39 +41,40 @@ with open("zbrani_podatki.csv", "w", newline='', encoding="utf-8") as izhod:
                 else:
                     LETO = int(re.search(LETO_RE, RAZDELJEN[-2][:RAZDELJEN[-2].index("<br>") + 4]).group(1)[:4])
         if re.search(AVTOR_RE, RAZDELJEN[-2]) == None:
-            AVTOR = "NONE"
+            AVTOR = None
         else:
             AVTOR = re.search(AVTOR_RE, RAZDELJEN[-2]).group(1).strip()
 
         if re.search(KRAJ_RE1, RAZDELJEN[-2]) == None:
-                KRAJ = "NONE"
+                KRAJ = None
         else:
             KRAJ = re.search(KRAJ_RE1, RAZDELJEN[-2]).group(1)
             if ", " in KRAJ:
                 MESTO = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ.split(", ")[0])
                 DRŽAVA = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ.split(", ")[1])
             else:
-                MESTO = "NONE"
+                MESTO = None
                 DRŽAVA = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ)
-        if KRAJ == "NONE":      
+        if KRAJ == None:      
             if re.search(KRAJ_RE2, RAZDELJEN[-2]) == None:
-                KRAJ = "NONE"
+                KRAJ, MESTO, DRŽAVA = None, None, None
             else:
                 KRAJ = re.search(KRAJ_RE2, RAZDELJEN[-2]).group(1)
-            if ", " in KRAJ:
-                MESTO = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ.split(", ")[0])
-                DRŽAVA = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ.split(", ")[1])
-            else:
-                MESTO = "NONE"
-                DRŽAVA = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ)
+                if ", " in KRAJ:
+                    MESTO = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ.split(", ")[0])
+                    DRŽAVA = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ.split(", ")[1])
+                else:
+                    MESTO = None
+                    DRŽAVA = re.sub(r"[^A-Za-z\?\s\&\;\:]+", "", KRAJ)
 
         TABLATURA_SET = set(re.findall(TABLATURA_RE, RAZDELJEN[-1]))
         TABLATURA = ""
         for tab in TABLATURA_SET:
             TABLATURA += f"{tab}, "
         if TABLATURA == "":
-            TABLATURA = "NONE"
-        TABLATURA = TABLATURA.strip(", ")
+            TABLATURA = None
+        if TABLATURA != None:
+            TABLATURA = TABLATURA.strip(", ")
 
         STRUNE_SET = set(re.findall(r"[\d\,and\-\s]+string", RAZDELJEN[-1])) | set(re.findall(r"[\d\,and\-\s]+course", RAZDELJEN[-1]))
             
@@ -90,7 +91,7 @@ with open("zbrani_podatki.csv", "w", newline='', encoding="utf-8") as izhod:
                 STEVILO_STRUN += f"{element}, "
             STEVILO_STRUN = STEVILO_STRUN.strip(", ")
         if STEVILO_STRUN == "":
-            STEVILO_STRUN = "NONE"
+            STEVILO_STRUN = None
 
         LUTNJA_SET = set(re.findall(r"lute", RAZDELJEN[-1])) | set(re.findall(r"guitar", RAZDELJEN[-1]))
         LUTNJA = ""
@@ -108,7 +109,8 @@ with open("zbrani_podatki.csv", "w", newline='', encoding="utf-8") as izhod:
         for indeks in range(2, len(VRSTA)):
             kos = VRSTA[indeks]
             for znak in POSEBNI_ZNAKI:
-                kos = re.sub(znak, POSEBNI_ZNAKI[znak], kos)
+                if kos != None:
+                    kos = re.sub(znak, POSEBNI_ZNAKI[znak], kos)
             VRSTA[indeks] = kos
         writer.writerow(VRSTA)
         ID +=1
