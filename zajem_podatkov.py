@@ -15,7 +15,7 @@ POSEBNI_ZNAKI = {"&#382;": "ž", "&ocirc;": "ô", "&#347;": "ś", "&szlig;": "ß
 print(SEZNAM[1713])
 
 #Regularni izrazi za določen tip podatkov.
-LETO_RE = r"(\d{4,}\??\/?\-?[a-z]*\s?\d*)[\;\:\(\)\sA-Za-z\]\[\&]*\s?[A-Za-z\]\[<\/>\?\]]*<br>"
+LETO_RE = r"([^\-]\d{4,}\??\/?\-?[a-z]*\s?\d*)[\;\:\(\)\sA-Za-z\]\[\&]*\s?[A-Za-z\]\[<\/>\?\]]*<br>"
 AVTOR_RE = r"<br>([\d\#A-Za-z\'\s\?\;\&\-]{3,}\,?\s[\d\#A-Za-z\'\s\?\;\&\-]{3,})\.*"
 KRAJ_RE1 = r"</em>[^\(]*\(([A-Z]+[A-Za-z\s\,\[\;\&]*)[\)\:\]]+"
 KRAJ_RE2 = r"<br>[^\(\[<>]*\(([A-Z]+[A-Za-z\s\,\[\;\&]*)[\)\:\]]+"
@@ -39,7 +39,7 @@ with open("zbrani_podatki.csv", "w", newline='', encoding="utf-8") as izhod:
                 elif "?" in re.search(LETO_RE, RAZDELJEN[-2][:RAZDELJEN[-2].index("<br>") + 4]).group(1):
                     LETO = 0
                 else:
-                    LETO = int(re.search(LETO_RE, RAZDELJEN[-2][:RAZDELJEN[-2].index("<br>") + 4]).group(1)[:4])
+                    LETO = int(re.search(LETO_RE, RAZDELJEN[-2][:RAZDELJEN[-2].index("<br>") + 4]).group(1)[1:5])
         if re.search(AVTOR_RE, RAZDELJEN[-2]) == None:
             AVTOR = None
         else:
